@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 
 class Assignment:
     def __init__(self, name, category, grade, weight):
@@ -11,18 +10,18 @@ class Assignment:
 class GradeCalculator:
     def __init__(self):
         self.assignments = []
-        self.total_fx_weight = 0
-        self.total_sx_weight = 0
-        self.total_fx_grade = 0
-        self.total_sx_grade = 0
+        self.total_FA_weight = 0
+        self.total_SA_weight = 0
+        self.total_FA_grade = 0
+        self.total_SA_grade = 0
 
     def validate_input(self, category, grade, weight):
         """Validate all input parameters"""
         errors = []
         
         # Validate category
-        if category.upper() not in ['FX', 'SX']:
-            errors.append("Category must be 'FX' or 'SX'")
+        if category.upper() not in ['FA', 'SA']:
+            errors.append("Category must be 'FA' or 'SA'")
         
         # Validate grade
         try:
@@ -47,7 +46,7 @@ class GradeCalculator:
         print("\n--- Add New Assignment ---")
         
         name = input("Assignment Name: ").strip()
-        category = input("Category (FX/SX): ").strip()
+        category = input("Category (FA/SA): ").strip()
         grade = input("Grade (0-100): ").strip()
         weight = input("Weight: ").strip()
         
@@ -65,36 +64,36 @@ class GradeCalculator:
         
         # Update totals
         weighted_grade = (assignment.grade / 100) * assignment.weight
-        if assignment.category == 'FX':
-            self.total_fx_weight += assignment.weight
-            self.total_fx_grade += weighted_grade
-        else:  # SX
-            self.total_sx_weight += assignment.weight
-            self.total_sx_grade += weighted_grade
+        if assignment.category == 'FA':
+            self.total_FA_weight += assignment.weight
+            self.total_FA_grade += weighted_grade
+        else:  # SA
+            self.total_SA_weight += assignment.weight
+            self.total_SA_grade += weighted_grade
             
-        print(f"✓ Assignment '{name}' added successfully!")
+        print(f"Assignment '{name}' added successfully!")
         return True
 
     def calculate_results(self):
         """Calculate final results"""
-        total_grade = self.total_fx_grade + self.total_sx_grade
+        total_grade = self.total_FA_grade + self.total_SA_grade
         cp_score = (total_grade / 100) * 5.0 if total_grade > 0 else 0
         
         # Pass/Fail logic
-        fx_pass = self.total_fx_grade >= (self.total_fx_weight * 0.5) if self.total_fx_weight > 0 else True
-        sx_pass = self.total_sx_grade >= (self.total_sx_weight * 0.5) if self.total_sx_weight > 0 else True
-        overall_pass = fx_pass and sx_pass
+        FA_pass = self.total_FA_grade >= (self.total_FA_weight * 0.5) if self.total_FA_weight > 0 else True
+        SA_pass = self.total_SA_grade >= (self.total_SA_weight * 0.5) if self.total_SA_weight > 0 else True
+        overall_pass = FA_pass and SA_pass
         
         return {
-            'total_fx_grade': self.total_fx_grade,
-            'total_fx_weight': self.total_fx_weight,
-            'total_sx_grade': self.total_sx_grade,
-            'total_sx_weight': self.total_sx_weight,
+            'total_FA_grade': self.total_FA_grade,
+            'total_FA_weight': self.total_FA_weight,
+            'total_SA_grade': self.total_SA_grade,
+            'total_SA_weight': self.total_SA_weight,
             'total_grade': total_grade,
             'cp_score': cp_score,
             'overall_pass': overall_pass,
-            'fx_pass': fx_pass,
-            'sx_pass': sx_pass
+            'FA_pass': FA_pass,
+            'SA_pass': SA_pass
         }
 
     def print_summary(self):
@@ -105,8 +104,8 @@ class GradeCalculator:
         print("GRADE SUMMARY")
         print("="*50)
         
-        print(f"Total Formative: {results['total_fx_grade']:.2f} / {results['total_fx_weight']:.2f}")
-        print(f"Total Summative: {results['total_sx_grade']:.2f} / {results['total_sx_weight']:.2f}")
+        print(f"Total Formative: {results['total_FA_grade']:.2f} / {results['total_FA_weight']:.2f}")
+        print(f"Total Summative: {results['total_SA_grade']:.2f} / {results['total_SA_weight']:.2f}")
         print(f"Total Grade: {results['total_grade']:.2f} / 100")
         print(f"CP Score: {results['cp_score']:.3f}")
         
@@ -126,10 +125,10 @@ class GradeCalculator:
         print(f"Class: {grade_class}")
         print(f"Status: {'PASS' if results['overall_pass'] else 'FAIL'}")
         
-        if not results['fx_pass']:
-            print("⚠️  Must resubmit Formative assignments")
-        if not results['sx_pass']:
-            print("⚠️  Must resubmit Summative assignments")
+        if not results['FA_pass']:
+            print("Must resubmit Formative assignments")
+        if not results['SA_pass']:
+            print("Must resubmit Summative assignments")
 
     def export_to_csv(self):
         """Export assignments to CSV file"""
@@ -147,7 +146,7 @@ class GradeCalculator:
                         assignment.weight
                     ])
             
-            print(f"\n✓ Grades exported to {filename}")
+            print(f"\n Grades exported to {filename}")
             return True
         except Exception as e:
             print(f"✗ Error exporting to CSV: {e}")
@@ -160,8 +159,7 @@ class GradeCalculator:
         print("="*50)
         
         while True:
-            if self.add_assignment():
-                continue
+            self.add_assignment()
             
             # Ask if user wants to add another assignment
             while True:

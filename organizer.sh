@@ -2,12 +2,6 @@
 
 # organizer.sh - Archive CSV files with timestamp and log actions
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
 # Log file
 LOG_FILE="organizer.log"
 
@@ -15,7 +9,7 @@ LOG_FILE="organizer.log"
 log_message() {
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo "[$timestamp] $1" >> "$LOG_FILE"
-    echo -e "${GREEN}[$timestamp]${NC} $1"
+    echo -e "[$timestamp] $1"
 }
 
 # Function to log file content
