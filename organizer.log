@@ -1,0 +1,10 @@
+[2025-11-19 11:23:35] Created archive directory
+[2025-11-19 11:23:35] Found        1 CSV file(s) to process
+[2025-11-19 11:23:35] Processing: grades.csv -> archive/grades-20251119-112335.csv
+=== Content of grades.csv -> grades-20251119-112335.csv ===
+Assignment,Category,Grade,Weight
+Python,FX,80.0,3.0
+=== End of content ===
+
+[2025-11-19 11:23:35] Successfully archived: grades.csv to archive/grades-20251119-112335.csv
+[2025-11-19 11:23:35] Archiving complete. Processed 1 file(s)
