@@ -46,17 +46,35 @@ class GradeCalculator:
         print("\n--- Add New Assignment ---")
         
         name = input("Assignment Name: ").strip()
+        while name == "":
+            print("✗ Assignment name cannot be empty.")
+            name = input("Assignment Name: ").strip()
+
         category = input("Category (FA/SA): ").strip()
+
+        while category.upper() not in ['FA', 'SA']:
+            print("✗ Invalid category. Must be 'FA' or 'SA'.")
+            category = input("Category (FA/SA): ").strip()
+
         grade = input("Grade (0-100): ").strip()
+
+        while grade == "" or not grade.replace('.', '', 1).isdigit() or not (0 <= float(grade) <= 100):
+            print("✗ Invalid grade. Must be a number between 0 and 100.")
+            grade = input("Grade (0-100): ").strip()
+
         weight = input("Weight: ").strip()
+
+        while weight == "" or not weight.replace('.', '', 1).isdigit() or float(weight) <= 0:
+            print("✗ Invalid weight. Must be a positive number.")
+            weight = input("Weight: ").strip()
         
         # Validate input
-        errors = self.validate_input(category, grade, weight)
-        if errors:
-            print("Validation errors:")
-            for error in errors:
-                print(f"  - {error}")
-            return False
+        # errors = self.validate_input(category, grade, weight)
+        # if errors:
+        #     print("Validation errors:")
+        #     for error in errors:
+        #         print(f"  - {error}")
+        #     return False
         
         # Create and store assignment
         assignment = Assignment(name, category, grade, weight)
@@ -125,10 +143,14 @@ class GradeCalculator:
         print(f"Class: {grade_class}")
         print(f"Status: {'PASS' if results['overall_pass'] else 'FAIL'}")
         
-        if not results['FA_pass']:
-            print("Must resubmit Formative assignments")
-        if not results['SA_pass']:
-            print("Must resubmit Summative assignments")
+        if results['overall_pass'] is False:
+            print("Resubmission : Discussion Forum")
+
+
+        # if not results['FA_pass']:
+        #     print("Must resubmit Formative assignments")
+        # if not results['SA_pass']:
+        #     print("Must resubmit Summative assignments")
 
     def export_to_csv(self):
         """Export assignments to CSV file"""
