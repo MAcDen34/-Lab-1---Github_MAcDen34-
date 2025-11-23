@@ -51,3 +51,14 @@ Luniz65,SA,1.9,60.0
 
 [2025-11-23 10:44:01] Successfully archived: grades.csv to archive/grades-20251123-104401.csv
 [2025-11-23 10:44:01] Archiving complete. Processed 1 file(s)
+[2025-11-23 15:30:01] Archive directory already exists
+[2025-11-23 15:30:01] Found        1 CSV file(s) to process
+[2025-11-23 15:30:01] Processing: grades.csv -> archive/grades-20251123-153001.csv
+=== Content of grades.csv -> grades-20251123-153001.csv ===
+Assignment,Category,Grade,Weight
+Python,FA,80,40
+Linux,SA,90,60
+=== End of content ===
+
+[2025-11-23 15:30:01] Successfully archived: grades.csv to archive/grades-20251123-153001.csv
+[2025-11-23 15:30:01] Archiving complete. Processed 1 file(s)

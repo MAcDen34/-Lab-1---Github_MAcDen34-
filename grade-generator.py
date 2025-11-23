@@ -44,141 +44,165 @@ class GradeCalculator:
     def add_assignment(self):
         """Add a new assignment with validation"""
         print("\n--- Add New Assignment ---")
-        
-        name = input("Assignment Name: ").strip()
-        
-        while name == "":
-            print("✗ Assignment name cannot be empty.")
-            name = input("Assignment Name: ").strip()
 
-        category = input("Category (FA/SA): ").strip()
+        # Validate assignment name.
+        while True:
+          name = input("Assignment Name: ").strip()
+          if name == "":
+               print("Assignment name cannot be empty.")
+          else:
+               break
+
+        category = input("Category (FA/SA): ").upper().strip()
 
         while category.upper() not in ['FA', 'SA']:
-            print("✗ Invalid category. Must be 'FA' or 'SA'.")
-            category = input("Category (FA/SA): ").strip()
+                print("Invalid category. Must be 'FA' or 'SA'.")
+                category = input("Category (FA/SA): ").strip().upper()
 
         grade = input("Grade (0-100): ").strip()
 
-        while grade == "" or not grade.replace('.', '', 1).isdigit() or not (0 <= float(grade) <= 100):
-            print("✗ Invalid grade. Must be a number between 0 and 100.")
-            grade = input("Grade (0-100): ").strip()
+        while not (0 <= float(grade) <= 100):
+                print("Invalid grade. Must be a number between 0 and 100.")
+                grade = input("Grade (0-100): ").strip()
 
         weight = input("Weight: ").strip()
 
-        while weight == "" or not weight.replace('.', '', 1).isdigit() or float(weight) <= 0:
-            print("✗ Invalid weight. Must be a positive number.")
-            weight = input("Weight: ").strip()
-        
-        # Validate all inputs
-        errors = self.validate_input(category, grade, weight)
-        if errors:
-            print("✗ Errors in input:")
-            for error in errors:
-                print(f" - {error}")
-            return False
-        
-        # Create and store assignment
-        assignment = Assignment(name, category, grade, weight)
+        while not (float(weight) >= 0):
+                print("Invalid weight. Must be a positive number.")
+                weight = input("Weight: ").strip()
+
+        assignment = {
+             "name": name,
+             "category": category,
+             "grade": int(grade),
+             "weight": int(weight)
+        }
         self.assignments.append(assignment)
-        
-        # Update totals
-        weighted_grade = (assignment.grade / 100) * assignment.weight
-        if assignment.category == 'FA':
-            self.total_FA_weight += assignment.weight
-            self.total_FA_grade += weighted_grade
-        else:  # SA
-            self.total_SA_weight += assignment.weight
-            self.total_SA_grade += weighted_grade
             
-        print(f"Assignment '{name}' added successfully!")
-        return True
+        # Update totals
+        weighted_grade = (assignment["grade"] / 100) * assignment["weight"]
+        if assignment["category"] == 'FA':
+                self.total_FA_weight += assignment["weight"]
+                self.total_FA_grade += weighted_grade
+        else:
+                self.total_SA_weight += assignment["weight"]
+                self.total_SA_grade += weighted_grade
+                
+        print(f"Assignment '{assignment["name"]}' added successfully!")
+
 
     def calculate_results(self):
-        """Calculate final results"""
-        total_grade = self.total_FA_grade + self.total_SA_grade
-        GPA = (total_grade / 100) * 5.0 if total_grade > 0 else 0
-        
-        # Pass/Fail logic
-        FA_pass = self.total_FA_grade >= (self.total_FA_weight * 0.5) if self.total_FA_weight > 0 else True
-        SA_pass = self.total_SA_grade >= (self.total_SA_weight * 0.5) if self.total_SA_weight > 0 else True
-        overall_pass = FA_pass and SA_pass
-        
-        return {
-            'total_FA_grade': self.total_FA_grade,
-            'total_FA_weight': self.total_FA_weight,
-            'total_SA_grade': self.total_SA_grade,
-            'total_SA_weight': self.total_SA_weight,
-            'total_grade': total_grade,
-            'GPA': GPA,
-            'overall_pass': overall_pass,
-            'FA_pass': FA_pass,
-            'SA_pass': SA_pass
-        }
+            """Calculate final results"""
+            assignments = self.assignments
+
+            total_grade = self.total_FA_grade + self.total_SA_grade
+
+            GPA = (total_grade / 100) * 5.0 if total_grade > 0 else 0
+            
+            # Pass/Fail logic
+            FA_pass = self.total_FA_grade >= (self.total_FA_weight * 0.5) if self.total_FA_weight > 0 else True
+            SA_pass = self.total_SA_grade >= (self.total_SA_weight * 0.5) if self.total_SA_weight > 0 else True
+            overall_pass = FA_pass and SA_pass
+
+            formative_to_resubmit = []
+
+            for assignment in assignments:
+                if assignment["category"] == "FA" and assignment["grade"] < 50:
+                    formative_to_resubmit.append(assignment)
+
+            if not formative_to_resubmit:
+                assignments_to_resubmit = []
+            elif len(formative_to_resubmit) == 1:
+                assignments_to_resubmit = [formative_to_resubmit[0]["name"]]
+            else:
+                high_weight = max(assignment["weight"] for assignment in formative_to_resubmit)
+
+                high_weight_assignments = [assignment for assignment in formative_to_resubmit if assignment["weight"] == high_weight]
+
+                if len(high_weight_assignments) == 1:
+                    assignments_to_resubmit = [high_weight_assignments[0]["name"]]
+                else:
+                    assignments_to_resubmit = [assignment["name"] for assignment in high_weight_assignments]
+
+            
+            return {
+                'total_FA_grade': self.total_FA_grade,
+                'total_FA_weight': self.total_FA_weight,
+                'total_SA_grade': self.total_SA_grade,
+                'total_SA_weight': self.total_SA_weight,
+                'total_grade': total_grade,
+                'GPA': GPA,
+                'overall_pass': overall_pass,
+                'FA_pass': FA_pass,
+                'SA_pass': SA_pass,
+                'resubmit': assignments_to_resubmit
+            }
 
     def print_summary(self):
-        """Print results summary to console"""
-        results = self.calculate_results()
-        
-        print("\n" + "="*50)
-        print("GRADE SUMMARY")
-        print("="*50)
-        
-        print(f"Total Formative: {results['total_FA_grade']:.2f} / {results['total_FA_weight']:.2f}")
-        print(f"Total Summative: {results['total_SA_grade']:.2f} / {results['total_SA_weight']:.2f}")
-        print('-'*17)
-        print(f"Total Grade: {results['total_grade']:.2f} / 100")
-        print(f"GPA Score: {results['GPA']:.3f}")
-        print(f"Status: {'PASS' if results['overall_pass'] else 'FAIL'}")
-        
-        if results['overall_pass'] is False:
-            print("Resubmission : Discussion Forum")
+            """Print results summary to console"""
+            results = self.calculate_results()
+            
+            print("--- RESULT ---")
+            
+            print(f"Total Formative: {results['total_FA_grade']:.2f} / {results['total_FA_weight']}")
+            print(f"Total Summative: {results['total_SA_grade']:.2f} / {results['total_SA_weight']}")
+            print('-'*17)
+
+            out_of = results['total_FA_weight'] + results['total_SA_weight']
+
+            print(f"Total Grade:      {results['total_grade']:.2f} / {out_of}")
+            print(f"GPA:              {results['GPA']:.4f}")
+            print(f"Status:           {'PASS' if results['overall_pass'] else 'FAIL'}")
+            
+            for assignment_name in results['resubmit']:
+                print(f"Resbumission:     {assignment_name}")
 
     def export_to_csv(self):
-        """Export assignments to CSV file"""
-        filename = "grades.csv"
-        try:
-            with open(filename, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(['Assignment', 'Category', 'Grade', 'Weight'])
-                
-                for assignment in self.assignments:
-                    writer.writerow([
-                        assignment.name,
-                        assignment.category,
-                        assignment.grade,
-                        assignment.weight
-                    ])
+            """Export assignments to CSV file"""
+            filename = "grades.csv"
+            try:
+                with open(filename, 'w', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(['Assignment', 'Category', 'Grade', 'Weight'])
+                    
+                    for assignment in self.assignments:
+                        writer.writerow([
+                            assignment["name"],
+                            assignment["category"],
+                            int(assignment["grade"]),
+                            int(assignment["weight"])
+                        ])
 
-            print(f"\n Grades exported to {filename}")
-            return True
-        except Exception as e:
-            print(f"✗ Error exporting to CSV: {e}")
-            return False
+                print(f"\n Grades exported to {filename}")
+                return True
+            except Exception as e:
+                print(f"Error exporting to CSV: {e}")
+                return False
 
     def run(self):
-        """Main program loop"""
-        print("="*50)
-        print("GRADE GENERATOR CALCULATOR")
-        print("="*50)
-        
-        while True:
-            self.add_assignment()
+            """Main program loop"""
+            print("="*50)
+            print("GRADE GENERATOR CALCULATOR")
+            print("="*50)
             
-            # Ask if user wants to add another assignment
             while True:
-                another = input("\nAdd another assignment? (y/n): ").strip().lower()
-                if another in ['y', 'n']:
+                self.add_assignment()
+                
+                # Ask if user wants to add another assignment
+                while True:
+                    another = input("\nAdd another assignment? (y/n): ").strip().lower()
+                    if another in ['y', 'n']:
+                        break
+                    print("Please enter 'y' or 'n'")
+                
+                if another == 'n':
                     break
-                print("Please enter 'y' or 'n'")
             
-            if another == 'n':
-                break
-        
-        if self.assignments:
-            self.print_summary()
-            self.export_to_csv()
-        else:
-            print("No assignments were added.")
+            if self.assignments:
+                self.print_summary()
+                self.export_to_csv()
+            else:
+                print("No assignments were added.")
 
 if __name__ == "__main__":
     calculator = GradeCalculator()
