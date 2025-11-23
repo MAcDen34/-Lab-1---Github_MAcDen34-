@@ -46,6 +46,7 @@ class GradeCalculator:
         print("\n--- Add New Assignment ---")
         
         name = input("Assignment Name: ").strip()
+        
         while name == "":
             print("✗ Assignment name cannot be empty.")
             name = input("Assignment Name: ").strip()
@@ -68,13 +69,13 @@ class GradeCalculator:
             print("✗ Invalid weight. Must be a positive number.")
             weight = input("Weight: ").strip()
         
-        # Validate input
-        # errors = self.validate_input(category, grade, weight)
-        # if errors:
-        #     print("Validation errors:")
-        #     for error in errors:
-        #         print(f"  - {error}")
-        #     return False
+        # Validate all inputs
+        errors = self.validate_input(category, grade, weight)
+        if errors:
+            print("✗ Errors in input:")
+            for error in errors:
+                print(f" - {error}")
+            return False
         
         # Create and store assignment
         assignment = Assignment(name, category, grade, weight)
@@ -95,7 +96,7 @@ class GradeCalculator:
     def calculate_results(self):
         """Calculate final results"""
         total_grade = self.total_FA_grade + self.total_SA_grade
-        cp_score = (total_grade / 100) * 5.0 if total_grade > 0 else 0
+        GPA = (total_grade / 100) * 5.0 if total_grade > 0 else 0
         
         # Pass/Fail logic
         FA_pass = self.total_FA_grade >= (self.total_FA_weight * 0.5) if self.total_FA_weight > 0 else True
@@ -108,7 +109,7 @@ class GradeCalculator:
             'total_SA_grade': self.total_SA_grade,
             'total_SA_weight': self.total_SA_weight,
             'total_grade': total_grade,
-            'cp_score': cp_score,
+            'GPA': GPA,
             'overall_pass': overall_pass,
             'FA_pass': FA_pass,
             'SA_pass': SA_pass
@@ -124,33 +125,13 @@ class GradeCalculator:
         
         print(f"Total Formative: {results['total_FA_grade']:.2f} / {results['total_FA_weight']:.2f}")
         print(f"Total Summative: {results['total_SA_grade']:.2f} / {results['total_SA_weight']:.2f}")
+        print('-'*17)
         print(f"Total Grade: {results['total_grade']:.2f} / 100")
-        print(f"CP Score: {results['cp_score']:.3f}")
-        
-        # Determine class based on CP score
-        cp = results['cp_score']
-        if cp >= 4.5:
-            grade_class = "1st Class"
-        elif cp >= 3.5:
-            grade_class = "2nd Class Upper"
-        elif cp >= 2.5:
-            grade_class = "2nd Class Lower"
-        elif cp >= 1.5:
-            grade_class = "3rd Class"
-        else:
-            grade_class = "Fail"
-        
-        print(f"Class: {grade_class}")
+        print(f"GPA Score: {results['GPA']:.3f}")
         print(f"Status: {'PASS' if results['overall_pass'] else 'FAIL'}")
         
         if results['overall_pass'] is False:
             print("Resubmission : Discussion Forum")
-
-
-        # if not results['FA_pass']:
-        #     print("Must resubmit Formative assignments")
-        # if not results['SA_pass']:
-        #     print("Must resubmit Summative assignments")
 
     def export_to_csv(self):
         """Export assignments to CSV file"""
@@ -167,7 +148,7 @@ class GradeCalculator:
                         assignment.grade,
                         assignment.weight
                     ])
-            
+
             print(f"\n Grades exported to {filename}")
             return True
         except Exception as e:

@@ -13,17 +13,4 @@ project/
 └── archive/ # Created by organizer.sh for archived files
 
 
-## Part 1: Grade Generator (grade-generator.py)
 
-### Features
-- Interactive assignment input with validation
-- Support for Formative (FX) and Summative (SX) categories
-- Grade validation (0-100 range)
-- Weight validation (positive numbers)
-- Automatic CP score calculation
-- Pass/Fail determination
-- CSV export functionality
-
-### Usage
-```bash
-python3 grade-generator.py

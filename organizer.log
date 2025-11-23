@@ -29,3 +29,25 @@ Python,SA,85.0,60.0
 
 [2025-11-19 17:04:37] Successfully archived: grades.csv to archive/grades-20251119-170437.csv
 [2025-11-19 17:04:37] Archiving complete. Processed 1 file(s)
+[2025-11-22 20:58:01] Archive directory already exists
+[2025-11-22 20:58:01] Found        1 CSV file(s) to process
+[2025-11-22 20:58:01] Processing: grades.csv -> archive/grades-20251122-205801.csv
+=== Content of grades.csv -> grades-20251122-205801.csv ===
+Assignment,Category,Grade,Weight
+Test123,SA,35.3,100.0
+Test340,FA,40.6,100.0
+=== End of content ===
+
+[2025-11-22 20:58:01] Successfully archived: grades.csv to archive/grades-20251122-205801.csv
+[2025-11-22 20:58:01] Archiving complete. Processed 1 file(s)
+[2025-11-23 10:44:01] Archive directory already exists
+[2025-11-23 10:44:01] Found        1 CSV file(s) to process
+[2025-11-23 10:44:01] Processing: grades.csv -> archive/grades-20251123-104401.csv
+=== Content of grades.csv -> grades-20251123-104401.csv ===
+Assignment,Category,Grade,Weight
+Linuz,FA,0.9,40.0
+Luniz65,SA,1.9,60.0
+=== End of content ===
+
+[2025-11-23 10:44:01] Successfully archived: grades.csv to archive/grades-20251123-104401.csv
+[2025-11-23 10:44:01] Archiving complete. Processed 1 file(s)
